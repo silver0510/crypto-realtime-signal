@@ -1,5 +1,7 @@
 from binance.client import Client
 import indicators as indis
+import pandas as pd
+import pandas_ta as ta
 
 
 class Trending():
@@ -56,3 +58,17 @@ class Trending():
             return self.DOWN_TREND
 
         return self.SIDE_WAY
+
+    @classmethod
+    def prime_ema_interval(self, symbol='BTCBUSD', kline_interval=Client.KLINE_INTERVAL_1DAY):
+        CHECKING_LENGTH = 60
+        prices, emas = indis.calc_1000_ema(symbol, kline_interval)
+        above_ema = []
+        below_ema = []
+        for i in range(1, CHECKING_LENGTH):
+            if prices[len(prices)-i] >= emas[len(prices)-i]:
+                below_ema.append((prices[len(prices)-i], emas[len(prices)-i]))
+            else:
+                below_ema.append((prices[len(prices)-i], emas[len(prices)-i]))
+        print(len(above_ema))
+        print(below_ema)
