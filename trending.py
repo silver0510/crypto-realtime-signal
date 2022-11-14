@@ -61,14 +61,28 @@ class Trending():
 
     @classmethod
     def prime_ema_interval(self, symbol='BTCBUSD', kline_interval=Client.KLINE_INTERVAL_1DAY):
+        ema_lengths = [20, 34, 55, 84, 200]
+        for ema_length in ema_lengths:
+            ema, is_important, percent = self.__is_ema_important(
+                self, symbol, kline_interval, ema_length)
+            if is_important:
+                return ema, percent
+        return None, None
+
+    def __is_ema_important(self, symbol='BTCBUSD', kline_interval=Client.KLINE_INTERVAL_1DAY, length=34):
         CHECKING_LENGTH = 60
-        prices, emas = indis.calc_1000_ema(symbol, kline_interval)
+        THRESHOLD = 0.8
+        prices, emas = indis.calc_1000_ema(symbol, kline_interval, length)
         above_ema = []
         below_ema = []
-        for i in range(1, CHECKING_LENGTH):
+        for i in range(1, CHECKING_LENGTH + 1):
             if prices[len(prices)-i] >= emas[len(prices)-i]:
-                below_ema.append((prices[len(prices)-i], emas[len(prices)-i]))
+                above_ema.append((prices[len(prices)-i], emas[len(prices)-i]))
             else:
                 below_ema.append((prices[len(prices)-i], emas[len(prices)-i]))
-        print(len(above_ema))
-        print(below_ema)
+        percents_of_above_ema = round(len(above_ema)/CHECKING_LENGTH, 2)
+        percents_of_below_ema = round(len(below_ema)/CHECKING_LENGTH, 2)
+        if (percents_of_above_ema > THRESHOLD) or (percents_of_below_ema > THRESHOLD):
+            return length, True, max(percents_of_above_ema, percents_of_below_ema)
+        else:
+            return length, False, max(percents_of_above_ema, percents_of_below_ema)
