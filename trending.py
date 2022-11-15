@@ -3,7 +3,6 @@ import util
 
 import constants as cons
 import indicators as indis
-from model.kline import Kline
 
 
 class Trending():
@@ -16,7 +15,7 @@ class Trending():
 
     @classmethod
     def detect_trend_interval(self, symbol='BTCBUSD', kline_interval=Client.KLINE_INTERVAL_1DAY):
-        current_price = self.__current_price(symbol)
+        current_price = indis.current_price(symbol)
         ema_short = indis.calc_current_ema(
             symbol, kline_interval, self.SHORT_LENGTH)
         ema_medium = indis.calc_current_ema(
@@ -96,7 +95,3 @@ class Trending():
             return length, current_value, True, max(percents_of_above_ema, percents_of_below_ema)
         else:
             return length, current_value, False, max(percents_of_above_ema, percents_of_below_ema)
-
-    def __current_price(symbol):
-        return Kline(cons.client.get_historical_klines(
-            symbol, interval=Client.KLINE_INTERVAL_30MINUTE, limit=1)[0]).close_price

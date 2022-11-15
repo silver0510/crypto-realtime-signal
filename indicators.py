@@ -3,6 +3,7 @@ import pandas_ta as ta
 from binance.client import Client
 
 import constants as cons
+from model.kline import Kline
 
 
 def calc_current_ema(symbol='BTCBUSD', kline_interval=Client.KLINE_INTERVAL_1DAY, length=34, data_frame=None):
@@ -51,3 +52,8 @@ def calc_current_atr(symbol='BTCBUSD', kline_interval=Client.KLINE_INTERVAL_1DAY
         data_frame["low_price"], downcast="float"), pd.to_numeric(
         data_frame["close_price"], downcast="float"), length=length, mamode=mamode)
     return round(ret[len(ret) - 1], 2)
+
+
+def current_price(symbol):
+    return Kline(cons.client.get_historical_klines(
+        symbol, interval=Client.KLINE_INTERVAL_30MINUTE, limit=1)[0]).close_price

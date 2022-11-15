@@ -8,7 +8,8 @@ from util import print_json
 def main():
     symbol = 'BTCUSDT'
     interval = Client.KLINE_INTERVAL_1HOUR
-    ema_trend = Alert.ma_trending_prime_ma_for_15_1_4(symbol)
+    print(f'Current price: {indis.current_price(symbol)}')
+    ema_trend = Alert.ma_trending_prime_ma_for_1_4_1(symbol)
     print_json(ema_trend["trend_consensus"])
     print(
         f'prime ema: {ema_trend["prime_ema"]["ema"]}, current value = {ema_trend["prime_ema"]["current_value"]}, trust percent = {ema_trend["prime_ema"]["percent"]}')
