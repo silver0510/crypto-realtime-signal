@@ -42,7 +42,7 @@ class Trending():
         Trending for 1h - 4h - 1day
     '''
     @ classmethod
-    def current_trend_1_4_1(self, symbol='BTCBUSD',):
+    def current_trend_1_4_1(self, symbol='BTCBUSD'):
         return self.__trend_short_medium_long_consensus(self, symbol, Client.KLINE_INTERVAL_1HOUR, Client.KLINE_INTERVAL_4HOUR, Client.KLINE_INTERVAL_1DAY)
 
     def __trend_short_medium_long_consensus(self, symbol, short_interval, medium_interval, long_interval):
@@ -76,7 +76,7 @@ class Trending():
                 symbol, kline_interval, ema_length)
             if is_important:
                 return ema, current_value, percent
-        return None, None
+        return None, None, None
 
     def __is_ema_important(symbol='BTCBUSD', kline_interval=Client.KLINE_INTERVAL_1DAY, length=34):
         CHECKING_LENGTH = 60
