@@ -3,7 +3,6 @@ import pandas_ta as ta
 from binance.client import Client
 
 import constants as cons
-from model.kline import Kline
 
 
 def calc_current_ema(symbol='BTCBUSD', kline_interval=Client.KLINE_INTERVAL_1DAY, length=34):
