@@ -71,11 +71,11 @@ class Trending():
     def prime_ema_interval(self, symbol='BTCBUSD', kline_interval=Client.KLINE_INTERVAL_1DAY):
         ema_lengths = [20, 34, 55, 89, 200]
         for ema_length in ema_lengths:
-            ema, current_value, is_important, percent = self.__is_ema_important(
+            ema, current_value, is_important, percent, trend = self.__is_ema_important(
                 symbol, kline_interval, ema_length)
             if is_important:
-                return ema, current_value, percent
-        return None, None, None
+                return ema, current_value, percent, trend
+        return None, None, None, None
 
     def __is_ema_important(symbol='BTCBUSD', kline_interval=Client.KLINE_INTERVAL_1DAY, length=34):
         CHECKING_LENGTH = 60
@@ -91,7 +91,10 @@ class Trending():
                 below_ema.append((prices[len(prices)-i], emas[len(prices)-i]))
         percents_of_above_ema = round(len(above_ema)/CHECKING_LENGTH, 2)
         percents_of_below_ema = round(len(below_ema)/CHECKING_LENGTH, 2)
-        if (percents_of_above_ema > THRESHOLD) or (percents_of_below_ema > THRESHOLD):
-            return length, current_value, True, max(percents_of_above_ema, percents_of_below_ema)
-        else:
-            return length, current_value, False, max(percents_of_above_ema, percents_of_below_ema)
+        if percents_of_above_ema > THRESHOLD:
+            return length, current_value, True, percents_of_above_ema, "Above EMA"
+
+        if percents_of_below_ema > THRESHOLD:
+            return length, current_value, True, percents_of_below_ema, "Below EMA"
+
+        return length, current_value, False, max(percents_of_above_ema, percents_of_below_ema), "Sideway"

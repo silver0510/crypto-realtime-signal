@@ -12,7 +12,7 @@ def main():
     ema_trend = Alert.ma_trending_prime_ma_for_1_4_1(symbol)
     print_json(ema_trend["trend_consensus"])
     print(
-        f'prime ema: {ema_trend["prime_ema"]["ema"]}, current value = {ema_trend["prime_ema"]["current_value"]}, trust percent = {ema_trend["prime_ema"]["percent"]}')
+        f'Prime ema: {ema_trend["prime_ema"]["ema"]}, Current value = {ema_trend["prime_ema"]["current_value"]}, Trust percent = {ema_trend["prime_ema"]["percent"]}, Price often {ema_trend["prime_ema"]["trend"]}')
     print(f'RSI: {ema_trend["rsi"]}, ATR: {ema_trend["atr"]}')
 
 
