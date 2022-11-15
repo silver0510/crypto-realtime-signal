@@ -70,18 +70,19 @@ class Trending():
 
     @ classmethod
     def prime_ema_interval(self, symbol='BTCBUSD', kline_interval=Client.KLINE_INTERVAL_1DAY):
-        ema_lengths = [20, 34, 55, 84, 200]
+        ema_lengths = [20, 34, 55, 89, 200]
         for ema_length in ema_lengths:
-            ema, is_important, percent = self.__is_ema_important(
+            ema, current_value, is_important, percent = self.__is_ema_important(
                 symbol, kline_interval, ema_length)
             if is_important:
-                return ema, percent
+                return ema, current_value, percent
         return None, None
 
     def __is_ema_important(symbol='BTCBUSD', kline_interval=Client.KLINE_INTERVAL_1DAY, length=34):
         CHECKING_LENGTH = 60
         THRESHOLD = 0.8
         prices, emas = indis.calc_1000_ema(symbol, kline_interval, length)
+        current_value = round(emas[len(prices)-1], 2)
         above_ema = []
         below_ema = []
         for i in range(1, CHECKING_LENGTH + 1):
@@ -92,9 +93,9 @@ class Trending():
         percents_of_above_ema = round(len(above_ema)/CHECKING_LENGTH, 2)
         percents_of_below_ema = round(len(below_ema)/CHECKING_LENGTH, 2)
         if (percents_of_above_ema > THRESHOLD) or (percents_of_below_ema > THRESHOLD):
-            return length, True, max(percents_of_above_ema, percents_of_below_ema)
+            return length, current_value, True, max(percents_of_above_ema, percents_of_below_ema)
         else:
-            return length, False, max(percents_of_above_ema, percents_of_below_ema)
+            return length, current_value, False, max(percents_of_above_ema, percents_of_below_ema)
 
     def __current_price(symbol):
         return Kline(cons.client.get_historical_klines(
