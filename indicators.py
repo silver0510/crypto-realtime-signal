@@ -57,3 +57,10 @@ def calc_current_atr(symbol='BTCBUSD', kline_interval=Client.KLINE_INTERVAL_1DAY
 def current_price(symbol):
     return Kline(client.get_historical_klines(
         symbol, interval=Client.KLINE_INTERVAL_30MINUTE, limit=1)[0]).close_price
+
+
+def get_long_medium_short_rsi(symbol, short_interval, medium_interval, long_interval):
+    short_rsi = calc_current_rsi(symbol, short_interval)
+    medium_rsi = calc_current_rsi(symbol, medium_interval)
+    long_rsi = calc_current_rsi(symbol, long_interval)
+    return short_rsi, medium_rsi, long_rsi

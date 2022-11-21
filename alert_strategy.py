@@ -1,6 +1,6 @@
 from binance.client import Client
 
-import indicators as indis
+from indicators import *
 from trending import Trending
 
 
@@ -16,8 +16,8 @@ def __ma_trending_prime_ma(symbol, trend_consensus_func, short_trend_interval):
     trend_consensus = trend_consensus_func(symbol)
     ema, current_value, percent, trend = Trending.prime_ema_interval(
         symbol, short_trend_interval)
-    rsi = indis.calc_current_rsi(symbol, short_trend_interval)
-    atr = indis.calc_current_atr(symbol, short_trend_interval)
+    rsi = calc_current_rsi(symbol, short_trend_interval)
+    atr = calc_current_atr(symbol, short_trend_interval)
     return {
         "trend_consensus": trend_consensus,
         "prime_ema": {

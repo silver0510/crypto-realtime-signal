@@ -1,8 +1,7 @@
 from binance.client import Client
-import util
 
-import constants as cons
-import indicators as indis
+from constants import *
+from indicators import *
 
 
 class Trending():
@@ -15,17 +14,17 @@ class Trending():
 
     @classmethod
     def detect_trend_interval(self, symbol='BTCBUSD', kline_interval=Client.KLINE_INTERVAL_1DAY):
-        current_price = indis.current_price(symbol)
-        ema_short = indis.calc_current_ema(
+        price = current_price(symbol)
+        ema_short = calc_current_ema(
             symbol, kline_interval, self.SHORT_LENGTH)
-        ema_medium = indis.calc_current_ema(
+        ema_medium = calc_current_ema(
             symbol, kline_interval, self.MEDIUM_LENGTH)
-        # ema_long = indis.calc_current_ema(
+        # ema_long = calc_current_ema(
         #     symbol, kline_interval, self.LONG_LENGTH)
 
-        if (current_price >= ema_short) and (current_price >= ema_medium):
+        if (price >= ema_short) and (price >= ema_medium):
             return self.UP_TREND
-        if (current_price <= ema_short) and (current_price <= ema_medium):
+        if (price <= ema_short) and (price <= ema_medium):
             return self.DOWN_TREND
 
         return self.SIDE_WAY
@@ -33,14 +32,14 @@ class Trending():
     '''
         Trending for 15min - 1h - 4h
     '''
-    @ classmethod
+    @classmethod
     def current_trend_15_1_4(self, symbol='BTCBUSD'):
         return self.__trend_short_medium_long_consensus(self, symbol, Client.KLINE_INTERVAL_15MINUTE, Client.KLINE_INTERVAL_1HOUR, Client.KLINE_INTERVAL_4HOUR)
 
     '''
         Trending for 1h - 4h - 1day
     '''
-    @ classmethod
+    @classmethod
     def current_trend_1_4_1(self, symbol='BTCBUSD'):
         return self.__trend_short_medium_long_consensus(self, symbol, Client.KLINE_INTERVAL_1HOUR, Client.KLINE_INTERVAL_4HOUR, Client.KLINE_INTERVAL_1DAY)
 
@@ -67,7 +66,7 @@ class Trending():
             "conclusion": conclusion
         }
 
-    @ classmethod
+    @classmethod
     def prime_ema_interval(self, symbol='BTCBUSD', kline_interval=Client.KLINE_INTERVAL_1DAY):
         ema_lengths = [20, 34, 55, 89, 200]
         for ema_length in ema_lengths:
@@ -80,7 +79,7 @@ class Trending():
     def __is_ema_important(symbol='BTCBUSD', kline_interval=Client.KLINE_INTERVAL_1DAY, length=34):
         CHECKING_LENGTH = 60
         THRESHOLD = 0.8
-        prices, emas = indis.calc_1000_ema(symbol, kline_interval, length)
+        prices, emas = calc_1000_ema(symbol, kline_interval, length)
         current_value = round(emas[len(prices)-1], 2)
         above_ema = []
         below_ema = []
@@ -98,3 +97,30 @@ class Trending():
             return length, current_value, True, percents_of_below_ema, "Below EMA"
 
         return length, current_value, False, max(percents_of_above_ema, percents_of_below_ema), "Sideway"
+
+    @classmethod
+    def detect_long_short_by_rsi(self, symbol, short_interval, medium_interval, long_interval):
+        short_rsi, medium_rsi, long_rsi = get_long_medium_short_rsi(
+            symbol, short_interval, medium_interval, long_interval)
+        if (short_rsi > 19 and medium_rsi > 39 and long_rsi > 60) or (short_rsi > 39 and medium_rsi > 59 and long_rsi > 79):
+            return {
+                "short_rsi": short_rsi,
+                "medium_rsi": medium_rsi,
+                "long_rsi": long_rsi,
+                "conclusion": "LONG"
+            }
+
+        if (short_rsi < 61 and medium_rsi < 41 and long_rsi < 21) or (short_rsi < 81 and medium_rsi < 61 and long_rsi < 41):
+            return {
+                "short_rsi": short_rsi,
+                "medium_rsi": medium_rsi,
+                "long_rsi": long_rsi,
+                "conclusion": "SHORT"
+            }
+
+        return {
+            "short_rsi": short_rsi,
+            "medium_rsi": medium_rsi,
+            "long_rsi": long_rsi,
+            "conclusion": "SIDE_WAY"
+        }

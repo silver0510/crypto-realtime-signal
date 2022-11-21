@@ -7,7 +7,7 @@ from constants import *
 
 
 def main():
-    pass
+    get_trend_with_rsi()
 
 
 def show_trend():
@@ -19,6 +19,14 @@ def show_trend():
     print(
         f'Prime ema: {ema_trend["prime_ema"]["ema"]}, Current value = {ema_trend["prime_ema"]["current_value"]}, Trust percent = {ema_trend["prime_ema"]["percent"]}, Price often {ema_trend["prime_ema"]["trend"]}')
     print(f'RSI: {ema_trend["rsi"]}, ATR: {ema_trend["atr"]}')
+
+
+def get_trend_with_rsi():
+    for symbol in LIST_FUTURE_COINS_BUSD:
+        info = Trending.detect_long_short_by_rsi(
+            symbol, Client.KLINE_INTERVAL_15MINUTE, Client.KLINE_INTERVAL_1HOUR, Client.KLINE_INTERVAL_4HOUR)
+        info["symbol"] = symbol
+        print_json(info)
 
 
 def get_top_10():
