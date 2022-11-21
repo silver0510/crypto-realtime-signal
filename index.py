@@ -7,7 +7,7 @@ from constants import *
 
 
 def main():
-    show_trend()
+    pass
 
 
 def show_trend():
@@ -22,13 +22,13 @@ def show_trend():
 
 
 def get_top_10():
-    lis_coin_with_USDT = list(map(lambda x: x["symbol"], list(filter(lambda x: x["quoteAsset"] ==
-                                                                     "USDT", client.get_exchange_info()["symbols"]))))
+    list_coin_with_USDT = list(map(lambda x: x["symbol"], list(filter(
+        lambda x: x["quoteAsset"] == "USDT", client.get_exchange_info()["symbols"]))))
     # print_json(info)
     # avg_price = client.get_avg_price(symbol='BNBUSDT')
     # print(avg_price)
     info_24h = []
-    for coin in lis_coin_with_USDT:
+    for coin in list_coin_with_USDT:
         info_24h.append(client.get_ticker(symbol=coin))
 
     top_10 = sorted(info_24h, key=lambda x: float(
