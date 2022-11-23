@@ -2,6 +2,7 @@ from binance.client import Client
 
 from indicators import *
 from trending import Trending
+from util import *
 
 
 def ma_trending_prime_ma_for_15_1_4(symbol):
@@ -29,3 +30,55 @@ def __ma_trending_prime_ma(symbol, trend_consensus_func, short_trend_interval):
         "rsi": rsi,
         "atr": atr
     }
+
+
+def rsi_divegence(symbol, interval):
+    detect_length = 34
+    pivot_checking_period = 5
+    prices, rsis = calc_1000_rsi(symbol, interval)
+    price_pivot_highs, price_pivot_lows = get_pivot_low_high(
+        prices, pivot_checking_period)
+    rsi_pivot_highs, rsi_pivot_lows = get_pivot_low_high(
+        rsis, pivot_checking_period)
+    divegences = []
+
+    for i in range(len(rsi_pivot_highs) - detect_length, len(rsi_pivot_highs)):
+        rsi1 = rsi_pivot_highs[i]
+        price1 = price_pivot_highs[i]
+        if rsi1 < 60 or price1 == 0:
+            continue
+        for j in range(i + 1, len(rsi_pivot_highs)):
+            rsi2 = rsi_pivot_highs[j]
+            price2 = price_pivot_highs[j]
+            if rsi2 < 60 or price2 == 0:
+                continue
+            if (price2 > price1) and (rsi2 < rsi1):
+                divegences.append({
+                    "price1": price1,
+                    "price2": price2,
+                    "rsi1": rsi1,
+                    "rsi2": rsi2,
+                    "location1": len(rsi_pivot_highs) - i - 1,
+                    "location2": len(rsi_pivot_highs) - j - 1
+                })
+    for i in range(len(rsi_pivot_lows) - detect_length, len(rsi_pivot_lows)):
+        rsi1 = rsi_pivot_lows[i]
+        price1 = price_pivot_lows[i]
+        if (rsi1 == 0 or rsi1 > 40) or (price1 == 0):
+            continue
+        for j in range(i + 1, len(rsi_pivot_lows)):
+            rsi2 = rsi_pivot_lows[j]
+            price2 = price_pivot_lows[j]
+            if (rsi2 == 0 or rsi2 > 40) or (price2 == 0):
+                continue
+            if (price2 < price1) and (rsi2 > rsi1):
+                divegences.append({
+                    "price1": price1,
+                    "price2": price2,
+                    "rsi1": rsi1,
+                    "rsi2": rsi2,
+                    "location1": len(rsi_pivot_highs) - i - 1,
+                    "location2": len(rsi_pivot_highs) - j - 1
+                })
+
+    return divegences

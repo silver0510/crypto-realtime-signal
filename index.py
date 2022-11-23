@@ -1,20 +1,26 @@
+import plotext as plt
 from binance.client import Client
+
+from alert_strategy import *
 import indicators as indis
-from trending import Trending
-import alert_strategy as Alert
-from util import print_json
 from constants import *
+from trending import Trending
+from util import print_json
 
 
 def main():
-    get_trend_with_rsi()
+    for symbol in LIST_FUTURE_COINS_USDT:
+        divegences = rsi_divegence(
+            symbol, Client.KLINE_INTERVAL_1HOUR)
+        print("Symbol: %s" % symbol)
+        print_json(divegences)
 
 
 def show_trend():
     symbol = 'ETHUSDT'
     interval = Client.KLINE_INTERVAL_1HOUR
     print(f'Current price: {indis.current_price(symbol)}')
-    ema_trend = Alert.ma_trending_prime_ma_for_15_1_4(symbol)
+    ema_trend = ma_trending_prime_ma_for_15_1_4(symbol)
     print_json(ema_trend["trend_consensus"])
     print(
         f'Prime ema: {ema_trend["prime_ema"]["ema"]}, Current value = {ema_trend["prime_ema"]["current_value"]}, Trust percent = {ema_trend["prime_ema"]["percent"]}, Price often {ema_trend["prime_ema"]["trend"]}')
